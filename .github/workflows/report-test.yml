@@ -53,6 +53,6 @@ jobs:
         with:
           title: Test Coverage Report
           paths: ${{ github.workspace }}/build/jacoco/index.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           min-coverage-overall: 50
           min-coverage-changed-files: 50
