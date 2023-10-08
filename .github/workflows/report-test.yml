@@ -49,7 +49,7 @@ jobs:
 
       - name: Publish test coverage report
         id: jacoco
-        uses: madrapps/jacoco-report@1.2
+        uses: madrapps/jacoco-report@v1.6.1
         with:
           title: Test Coverage Report
           paths: ${{ github.workspace }}/build/jacoco/index.xml
