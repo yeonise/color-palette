@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yeon.colorpalette.ApiResponse;
-import com.yeon.colorpalette.ResponseMessage;
+import com.yeon.colorpalette.api.ApiResponse;
+import com.yeon.colorpalette.api.ResponseMessage;
 import com.yeon.colorpalette.member.application.MemberService;
 import com.yeon.colorpalette.member.presentation.request.MemberCreateRequest;
 
