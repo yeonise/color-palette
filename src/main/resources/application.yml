@@ -19,10 +19,10 @@ spring:
     activate:
       on-profile: test
   datasource:
-    url: jdbc:h2:mem:test
-    username: root
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/color_palette_test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: yeon
+    password: 1234
   sql:
     init:
       mode: never
