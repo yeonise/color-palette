@@ -12,7 +12,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	boolean existsByEmail(String email);
 	boolean existsByNickname(String nickname);
-	Optional<Member> findByEmailAndPassword(String email, String password);
+	Optional<Member> findByEmailAndPasswordAndIsDeleted(String email, String password, boolean isDeleted);
 
 	@Modifying
 	@Query(value = "UPDATE Member m SET m.isDeleted = true WHERE id = :id ")

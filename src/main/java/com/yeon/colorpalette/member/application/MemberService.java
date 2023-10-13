@@ -52,7 +52,7 @@ public class MemberService {
 
 	@Transactional
 	public LoginResponse login(LoginRequest request) {
-		Member member = memberRepository.findByEmailAndPassword(request.getEmail(), request.getPassword())
+		Member member = memberRepository.findByEmailAndPasswordAndIsDeleted(request.getEmail(), request.getPassword(), false)
 			.orElseThrow(InvalidLoginException::new);
 
 		return authService.issueTokens(new Account(member.getId(), null));

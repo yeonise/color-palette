@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,8 @@ import com.yeon.colorpalette.exception.member.EmailAlreadyInUseException;
 import com.yeon.colorpalette.exception.member.InvalidLoginException;
 import com.yeon.colorpalette.exception.member.NicknameAlreadyInUseException;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
+import com.yeon.colorpalette.member.application.response.LoginResponse;
+import com.yeon.colorpalette.member.domain.Account;
 import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.member.presentation.request.LoginRequest;
 
@@ -99,6 +102,29 @@ class MemberServiceTest extends IntegrationTestSupport {
 				assertDoesNotThrow(() -> memberService.login(loginRequest));
 			})
 		);
+	}
+
+	@DisplayName("회원탈퇴에 성공하면 기존 정보로 로그인 요청 시 에러가 발생한다")
+	@Test
+	void deleteMember() {
+	    // given
+		MemberCreateServiceRequest serviceRequest =
+			new MemberCreateServiceRequest("white@email.com", "white", "white100!");
+		Member member = memberService.create(serviceRequest);
+
+		LoginRequest loginRequest = LoginRequest.builder()
+			.email("white@email.com")
+			.password("white100!")
+			.build();
+
+		LoginResponse loginResponse = memberService.login(loginRequest);
+
+		// when
+		memberService.delete(new Account(member.getId(), loginResponse.getAccessToken()));
+
+	    // then
+		assertThatThrownBy(() -> memberService.login(loginRequest))
+			.isInstanceOf(InvalidLoginException.class);
 	}
 
 }
