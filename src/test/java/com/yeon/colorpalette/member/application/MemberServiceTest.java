@@ -15,9 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.yeon.colorpalette.IntegrationTestSupport;
 import com.yeon.colorpalette.exception.ErrorType;
 import com.yeon.colorpalette.exception.member.EmailAlreadyInUseException;
+import com.yeon.colorpalette.exception.member.InvalidLoginException;
 import com.yeon.colorpalette.exception.member.NicknameAlreadyInUseException;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.domain.Member;
+import com.yeon.colorpalette.member.presentation.request.LoginRequest;
 
 class MemberServiceTest extends IntegrationTestSupport {
 
@@ -62,6 +64,39 @@ class MemberServiceTest extends IntegrationTestSupport {
 				assertThatThrownBy(() -> memberService.create(serviceRequest))
 					.isInstanceOf(NicknameAlreadyInUseException.class)
 					.hasMessage(ErrorType.NICKNAME_ALREADY_IN_USE.getMessage());
+			})
+		);
+	}
+
+	@DisplayName("일반 로그인 시나리오")
+	@TestFactory
+	Collection<DynamicTest> login() {
+		// given
+		MemberCreateServiceRequest serviceRequest =
+			new MemberCreateServiceRequest("white@email.com", "white", "white100!");
+		Member member = memberService.create(serviceRequest);
+
+		return List.of(
+			dynamicTest("유효하지 않은 사용자 정보인 경우 예외가 발생한다", () -> {
+				// given
+				LoginRequest loginRequest = LoginRequest.builder()
+					.email("whit@email.com")
+					.password("white100!")
+					.build();
+
+				// when & then
+				assertThatThrownBy(() -> memberService.login(loginRequest))
+					.isInstanceOf(InvalidLoginException.class);
+			}),
+			dynamicTest("유효한 사용자 정보인 경우 로그인에 성공한다", () -> {
+				// given
+				LoginRequest loginRequest = LoginRequest.builder()
+					.email(member.getEmail())
+					.password(member.getPassword())
+					.build();
+
+				// when & then
+				assertDoesNotThrow(() -> memberService.login(loginRequest));
 			})
 		);
 	}
