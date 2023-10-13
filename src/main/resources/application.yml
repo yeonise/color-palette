@@ -1,6 +1,7 @@
 spring:
   profiles:
-    default: local
+    active: local
+    include: jwt
   jpa:
     hibernate:
       ddl-auto: none
@@ -9,16 +10,19 @@ spring:
         show_sql: true
         format_sql: true
         default_batch_fetch_size: 20
+  redis:
+    host: 127.0.0.1
+    port: 6379
 ---
 spring:
   config:
     activate:
       on-profile: test
   datasource:
-    url: jdbc:h2:mem:test
-    username: root
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/color_palette_test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: yeon
+    password: 1234
   sql:
     init:
       mode: never

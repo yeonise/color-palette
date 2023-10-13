@@ -15,6 +15,22 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+      mysql:
+        image: mysql:8.0.34
+        env:
+          MYSQL_DATABASE: color_palette_test
+          MYSQL_USER: yeon
+          MYSQL_PASSWORD: 1234
+          MYSQL_ROOT_PASSWORD: 1234
+        ports:
+          - 3306:3306
+
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -24,6 +40,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Copy application-jwt.yml
+        run: |
+          touch ./src/main/resources/application-jwt.yml
+          echo "${{ secrets.APPLICATION_JWT }}" > ./src/main/resources/application-jwt.yml
+          find src/main/resources
 
       - name: Cache Gradle packages
         uses: actions/cache@v3

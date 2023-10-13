@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,10 +15,9 @@ import com.yeon.colorpalette.api.ApiResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(CustomException.class)
-	public ApiResponse<Void> handleCustomException(CustomException exception) {
-		return ApiResponse.noData(exception.getStatus(), exception.getMessage());
+	public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException exception) {
+		return ResponseEntity.status(exception.getStatus()).body(ApiResponse.noData(exception.getStatus(), exception.getMessage()));
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

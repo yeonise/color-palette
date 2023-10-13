@@ -2,7 +2,6 @@ package com.yeon.colorpalette.member.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yeon.colorpalette.api.ApiResponse;
 import com.yeon.colorpalette.api.ResponseMessage;
+import com.yeon.colorpalette.config.resolver.Login;
 import com.yeon.colorpalette.member.application.MemberService;
+import com.yeon.colorpalette.member.application.response.AccessTokenResponse;
+import com.yeon.colorpalette.member.application.response.LoginResponse;
+import com.yeon.colorpalette.member.domain.Account;
+import com.yeon.colorpalette.member.presentation.request.LoginRequest;
 import com.yeon.colorpalette.member.presentation.request.MemberCreateRequest;
 
 import jakarta.validation.Valid;
@@ -28,15 +32,29 @@ public class MemberController {
 	@PostMapping
 	public ApiResponse<Void> createMember(@Valid @RequestBody MemberCreateRequest request) {
 		memberService.create(request.toService());
-
 		return ApiResponse.noData(HttpStatus.CREATED, ResponseMessage.MEMBER_CREATE_SUCCESS.getMessage());
 	}
 
-	@DeleteMapping("/{id}")
-	public ApiResponse<Void> deleteMember(@PathVariable Long id) {
-		memberService.delete(id);
-
+	@DeleteMapping
+	public ApiResponse<Void> deleteMember(@Login Account account) {
+		memberService.delete(account);
 		return ApiResponse.noData(HttpStatus.OK, ResponseMessage.MEMBER_DELETE_SUCCESS.getMessage());
+	}
+
+	@PostMapping("/login")
+	public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request) {
+		return ApiResponse.ok(ResponseMessage.LOGIN_SUCCESS.getMessage(), memberService.login(request));
+	}
+
+	@DeleteMapping("/logout")
+	public ApiResponse<Void> logout(@Login Account account) {
+		memberService.logout(account);
+		return ApiResponse.noData(HttpStatus.OK, ResponseMessage.LOGOUT_SUCCESS.getMessage());
+	}
+
+	@PostMapping("/reissue")
+	public ApiResponse<AccessTokenResponse> reissueAccessToken(@Login Account account) {
+		return ApiResponse.ok(ResponseMessage.REISSUE_ACCESS_TOKEN_SUCCESS.getMessage(), memberService.reissueAccessToken(account));
 	}
 
 }

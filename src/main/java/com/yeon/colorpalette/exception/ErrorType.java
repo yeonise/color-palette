@@ -6,7 +6,11 @@ public enum ErrorType {
 
 	// Member
 	EMAIL_ALREADY_IN_USE(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다"),
-	NICKNAME_ALREADY_IN_USE(HttpStatus.BAD_REQUEST, "이미 가입된 닉네임입니다");
+	NICKNAME_ALREADY_IN_USE(HttpStatus.BAD_REQUEST, "이미 가입된 닉네임입니다"),
+	INVALID_AUTHORIZATION_HEADER(HttpStatus.BAD_REQUEST, "Authorization 헤더를 찾을 수 없거나 형식이 올바르지 않습니다"),
+	EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다"),
+	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
+	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 정보입니다");
 
 	private final HttpStatus status;
 	private final String message;
