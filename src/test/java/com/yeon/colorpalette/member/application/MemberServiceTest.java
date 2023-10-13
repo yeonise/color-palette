@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +16,7 @@ import com.yeon.colorpalette.IntegrationTestSupport;
 import com.yeon.colorpalette.exception.ErrorType;
 import com.yeon.colorpalette.exception.member.EmailAlreadyInUseException;
 import com.yeon.colorpalette.exception.member.InvalidLoginException;
+import com.yeon.colorpalette.exception.member.InvalidTokenException;
 import com.yeon.colorpalette.exception.member.NicknameAlreadyInUseException;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.application.response.LoginResponse;
@@ -104,10 +104,10 @@ class MemberServiceTest extends IntegrationTestSupport {
 		);
 	}
 
-	@DisplayName("회원탈퇴에 성공하면 기존 정보로 로그인 요청 시 에러가 발생한다")
-	@Test
-	void deleteMember() {
-	    // given
+	@DisplayName("회원탈퇴 시나리오")
+	@TestFactory
+	Collection<DynamicTest> deleteMember() {
+		// given
 		MemberCreateServiceRequest serviceRequest =
 			new MemberCreateServiceRequest("white@email.com", "white", "white100!");
 		Member member = memberService.create(serviceRequest);
@@ -119,12 +119,22 @@ class MemberServiceTest extends IntegrationTestSupport {
 
 		LoginResponse loginResponse = memberService.login(loginRequest);
 
-		// when
-		memberService.delete(new Account(member.getId(), loginResponse.getAccessToken()));
+		return List.of(
+			dynamicTest("회원탈퇴에 성공하면 기존 정보로 로그인 요청 시 에러가 발생한다", () -> {
+				// when
+				memberService.delete(new Account(member.getId(), loginResponse.getAccessToken()));
 
-	    // then
-		assertThatThrownBy(() -> memberService.login(loginRequest))
-			.isInstanceOf(InvalidLoginException.class);
+				// then
+				assertThatThrownBy(() -> memberService.login(loginRequest))
+					.isInstanceOf(InvalidLoginException.class);
+				}
+			),
+			dynamicTest("기존 사용자의 Refresh 토큰을 무효화한다", () -> {
+				// when & then
+				assertThatThrownBy(() -> memberService.reissueAccessToken(new Account(member.getId(), loginResponse.getRefreshToken())))
+					.isInstanceOf(InvalidTokenException.class);
+			})
+		);
 	}
 
 }
