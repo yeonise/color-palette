@@ -44,7 +44,8 @@ jobs:
       - name: Copy application-jwt.yml
         run: |
           touch ./src/main/resources/application-jwt.yml
-          echo "${{ secrets.APPLICATION_JWT }}" > ./src/main/resources/application-jwt.yml
+          echo "${{ secrets.APPLICATION_JWT }}" | base64 --decode > ./src/main/resources/application-jwt.yml
+          find src/main/resources
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
