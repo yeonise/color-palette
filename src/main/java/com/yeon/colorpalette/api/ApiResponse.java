@@ -27,4 +27,8 @@ public class ApiResponse<T> {
 		return new ApiResponse<>(status, message, null);
 	}
 
+	public static <T> ApiResponse<T> ok(String message, T data) {
+		return new ApiResponse<>(HttpStatus.OK, message, data);
+	}
+
 }
