@@ -36,6 +36,33 @@ public class AuthControllerTest extends RestDocsSupport {
 	@Autowired
 	TokenProperties tokenProperties;
 
+	@DisplayName("OAuth 로그인 API")
+	@Test
+	void loginByOAuth() throws Exception {
+		// given
+		String code = "4%2F0AfJohXnjv2bbay5fBNK5HUuisDWKmX5poUsd6nrqSK3CC9xTf8TA1tcdmVGIKF6YEZKdrQ&scope=email+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=none";
+
+		given(authService.loginByOAuth(anyString()))
+			.willReturn(new LoginResponse("Access token will be displayed here.", "Refresh token will be displayed here."));
+
+		// when & then
+		mockMvc.perform(get("/api/oauth")
+				.param("code", code))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("member-login-oauth",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터"),
+					fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token"),
+					fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("Refresh Token")
+				)));
+	}
+
 	@DisplayName("일반 로그인 API")
 	@Test
 	void login() throws Exception {

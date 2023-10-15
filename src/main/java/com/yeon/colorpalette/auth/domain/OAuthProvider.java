@@ -32,7 +32,10 @@ public enum OAuthProvider {
 
 		private static String makeRandomNickname(String email) {
 			String random = email.split("@")[0] + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
-			return random.substring(0, 18);
+
+			if (random.length() > 20) return random.substring(0, 20);
+
+			return random;
 		}
 
 	}
