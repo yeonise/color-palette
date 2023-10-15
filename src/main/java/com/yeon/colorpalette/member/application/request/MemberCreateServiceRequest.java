@@ -1,8 +1,8 @@
 package com.yeon.colorpalette.member.application.request;
 
 import com.yeon.colorpalette.member.domain.Member;
-import com.yeon.colorpalette.member.domain.Provider;
-import com.yeon.colorpalette.member.domain.Role;
+import com.yeon.colorpalette.auth.domain.Provider;
+import com.yeon.colorpalette.auth.domain.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

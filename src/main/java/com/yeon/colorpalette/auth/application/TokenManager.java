@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.application;
+package com.yeon.colorpalette.auth.application;
 
 import java.util.Date;
 import java.util.Map;
@@ -7,8 +7,8 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Component;
 
-import com.yeon.colorpalette.exception.member.ExpiredTokenException;
-import com.yeon.colorpalette.exception.member.InvalidTokenException;
+import com.yeon.colorpalette.exception.auth.ExpiredTokenException;
+import com.yeon.colorpalette.exception.auth.InvalidTokenException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

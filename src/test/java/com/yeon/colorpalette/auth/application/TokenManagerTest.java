@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.application;
+package com.yeon.colorpalette.auth.application;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.yeon.colorpalette.IntegrationTestSupport;
-import com.yeon.colorpalette.member.domain.Account;
+import com.yeon.colorpalette.auth.domain.Account;
 
 import io.jsonwebtoken.security.Keys;
 

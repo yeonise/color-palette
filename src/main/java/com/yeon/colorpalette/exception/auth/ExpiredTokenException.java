@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.exception.member;
+package com.yeon.colorpalette.exception.auth;
 
 import com.yeon.colorpalette.exception.CustomException;
 import com.yeon.colorpalette.exception.ErrorType;

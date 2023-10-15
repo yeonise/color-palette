@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.yeon.colorpalette.member.application.AuthService;
-import com.yeon.colorpalette.member.domain.Account;
+import com.yeon.colorpalette.auth.application.AuthService;
+import com.yeon.colorpalette.auth.domain.Account;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,7 +44,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 	enum Whitelist {
 
 		SIGNUP(HttpMethod.POST, "/api/members"),
-		LOGIN(HttpMethod.POST, "/api/members/login");
+		LOGIN(HttpMethod.POST, "/api/login"),
+		REISSUE_ACCESS_TOKEN(HttpMethod.GET, "/api/auth/reissue"),;
 
 		private final HttpMethod httpMethod;
 		private final String url;

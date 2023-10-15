@@ -1,5 +1,8 @@
 package com.yeon.colorpalette.member.domain;
 
+import com.yeon.colorpalette.auth.domain.Provider;
+import com.yeon.colorpalette.auth.domain.Role;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
