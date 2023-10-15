@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.yeon.colorpalette.auth.application.AuthService;
 import com.yeon.colorpalette.auth.domain.Account;
+import com.yeon.colorpalette.auth.domain.Provider;
 import com.yeon.colorpalette.exception.member.EmailAlreadyInUseException;
 import com.yeon.colorpalette.exception.member.NicknameAlreadyInUseException;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
@@ -25,7 +26,7 @@ public class MemberService {
 	public Member create(MemberCreateServiceRequest serviceRequest) {
 		checkEmailAvailability(serviceRequest.getEmail());
 		checkNicknameAvailability(serviceRequest.getNickname());
-		return memberRepository.save(serviceRequest.toEntity());
+		return memberRepository.save(serviceRequest.toEntity(Provider.BASIC));
 	}
 
 	@Transactional
