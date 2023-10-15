@@ -7,17 +7,20 @@ import javax.crypto.SecretKey;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yeon.colorpalette.auth.application.response.AccessTokenResponse;
+import com.yeon.colorpalette.auth.application.response.LoginResponse;
+import com.yeon.colorpalette.auth.domain.Account;
+import com.yeon.colorpalette.auth.domain.OAuthAccount;
+import com.yeon.colorpalette.auth.domain.Provider;
+import com.yeon.colorpalette.auth.domain.RefreshToken;
+import com.yeon.colorpalette.auth.infrastructure.TokenRepository;
 import com.yeon.colorpalette.auth.presentation.request.LoginRequest;
 import com.yeon.colorpalette.exception.auth.AuthorizationHeaderException;
 import com.yeon.colorpalette.exception.auth.InvalidLoginException;
 import com.yeon.colorpalette.exception.auth.InvalidTokenException;
-import com.yeon.colorpalette.auth.application.response.AccessTokenResponse;
-import com.yeon.colorpalette.auth.application.response.LoginResponse;
-import com.yeon.colorpalette.auth.domain.Account;
-import com.yeon.colorpalette.auth.domain.RefreshToken;
+import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.member.infrastructure.MemberRepository;
-import com.yeon.colorpalette.auth.infrastructure.TokenRepository;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -32,19 +35,32 @@ public class AuthService {
 	private final TokenProperties tokenProperties;
 	private final TokenManager tokenManager;
 	private final TokenRepository tokenRepository;
+	private final OAuthManager oAuthManager;
 	private final MemberRepository memberRepository;
 
 	@Transactional
 	public LoginResponse login(LoginRequest request) {
-		Member member = memberRepository.findByEmailAndPasswordAndIsDeleted(request.getEmail(), request.getPassword(), false)
+		Member member = memberRepository.findByEmailAndPasswordAndIsDeleted(request.getEmail(), request.getPassword(),
+				false)
 			.orElseThrow(InvalidLoginException::new);
 
 		return issueTokens(new Account(member.getId(), null));
 	}
 
 	@Transactional
-	public AccessTokenResponse loginByOAuth(String provider, String code) {
-		return null;
+	public LoginResponse loginByOAuth(String code) {
+		OAuthAccount oAuthAccount = oAuthManager.generateOAuthAccount(code);
+
+		Member member = memberRepository.findByEmailAndProviderAndIsDeleted(oAuthAccount.getEmail(), Provider.GOOGLE,
+				false)
+			.orElseGet(() -> {
+				MemberCreateServiceRequest request =
+					new MemberCreateServiceRequest(oAuthAccount.getEmail(), oAuthAccount.getNickname(), null);
+
+				return memberRepository.save(request.toEntity(Provider.GOOGLE));
+			});
+
+		return issueTokens(new Account(member.getId(), null));
 	}
 
 	@Transactional
@@ -103,7 +119,8 @@ public class AuthService {
 
 	private String generateToken(Account account, long duration) {
 		final SecretKey key = Keys.hmacShaKeyFor(tokenProperties.getSecret().getBytes());
-		return tokenManager.generateToken(Map.of(Account.ID, account.getId()), tokenProperties.getIssuer(), duration, key);
+		return tokenManager.generateToken(Map.of(Account.ID, account.getId()), tokenProperties.getIssuer(), duration,
+			key);
 	}
 
 	private String extract(String authorizationHeader) {
