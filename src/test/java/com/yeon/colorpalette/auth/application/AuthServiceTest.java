@@ -20,9 +20,11 @@ import com.yeon.colorpalette.IntegrationTestSupport;
 import com.yeon.colorpalette.auth.application.response.AccessTokenResponse;
 import com.yeon.colorpalette.auth.application.response.LoginResponse;
 import com.yeon.colorpalette.auth.domain.Account;
+import com.yeon.colorpalette.auth.infrastructure.TokenRepository;
 import com.yeon.colorpalette.auth.presentation.request.LoginRequest;
 import com.yeon.colorpalette.exception.auth.AuthorizationHeaderException;
 import com.yeon.colorpalette.exception.auth.InvalidLoginException;
+import com.yeon.colorpalette.exception.auth.InvalidTokenException;
 import com.yeon.colorpalette.member.application.MemberService;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.domain.Member;
@@ -34,6 +36,9 @@ class AuthServiceTest extends IntegrationTestSupport {
 
 	@Autowired
 	MemberService memberService;
+
+	@Autowired
+	TokenRepository tokenRepository;
 
 	@DisplayName("일반 로그인 시나리오")
 	@TestFactory
@@ -63,19 +68,45 @@ class AuthServiceTest extends IntegrationTestSupport {
 		);
 	}
 
-	@DisplayName("Refresh 토큰이 유효하다면 Access 토큰을 재발급한다")
-	@Test
-	void reissueAccessToken() {
+	@DisplayName("Access 토큰을 재발급 시나리오")
+	@TestFactory
+	Collection<DynamicTest> reissueAccessToken() {
 		// given
 		makeMemberFixture();
 		LoginResponse loginResponse = authService.login(makeLoginRequest("white@email.com", "white100!"));
 
-		// when
-		AccessTokenResponse accessTokenResponse = authService.reissueAccessToken(new Account(1L, loginResponse.getRefreshToken()));
+		return List.of(
+			dynamicTest("Refresh 토큰이 유효하다면 Access 토큰을 재발급한다", () -> {
+				// when
+				AccessTokenResponse accessTokenResponse = authService.reissueAccessToken(new Account(1L, loginResponse.getRefreshToken()));
 
-		// then
-		assertThat(authService.extractAccount("Bearer " + accessTokenResponse.getAccessToken())
-			.getId()).isEqualTo(1L);
+				// then
+				assertThat(authService.extractAccount("Bearer " + accessTokenResponse.getAccessToken())
+					.getId()).isEqualTo(1L);
+			}),
+			dynamicTest("Refresh 토큰이 유효하지 않다면 예외가 발생한다", () -> {
+				// when & then
+				assertThatThrownBy(() -> authService.reissueAccessToken(new Account(1L, loginResponse.getAccessToken())))
+					.isInstanceOf(InvalidTokenException.class);
+			})
+		);
+	}
+
+	@DisplayName("로그아웃 요청 시 사용자의 모든 토큰을 무효화한다")
+	@Test
+	void logout() {
+	    // given
+		makeMemberFixture();
+		LoginResponse loginResponse = authService.login(makeLoginRequest("white@email.com", "white100!"));
+
+	    // when
+		authService.logout(new Account(1L, loginResponse.getAccessToken()));
+
+	    // then
+		assertAll(
+			() -> assertThat(tokenRepository.findRefreshToken(1L)).isEmpty(),
+			() -> assertThat(tokenRepository.isInBlacklist(loginResponse.getAccessToken())).isTrue()
+		);
 	}
 
 	private Member makeMemberFixture() {
