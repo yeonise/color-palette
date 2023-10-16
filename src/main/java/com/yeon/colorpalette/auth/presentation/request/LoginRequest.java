@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.presentation.request;
+package com.yeon.colorpalette.auth.presentation.request;
 
 import lombok.Builder;
 import lombok.Getter;

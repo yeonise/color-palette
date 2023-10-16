@@ -10,12 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yeon.colorpalette.api.ApiResponse;
 import com.yeon.colorpalette.api.ResponseMessage;
+import com.yeon.colorpalette.auth.domain.Account;
 import com.yeon.colorpalette.config.resolver.Login;
 import com.yeon.colorpalette.member.application.MemberService;
-import com.yeon.colorpalette.member.application.response.AccessTokenResponse;
-import com.yeon.colorpalette.member.application.response.LoginResponse;
-import com.yeon.colorpalette.member.domain.Account;
-import com.yeon.colorpalette.member.presentation.request.LoginRequest;
 import com.yeon.colorpalette.member.presentation.request.MemberCreateRequest;
 
 import jakarta.validation.Valid;
@@ -39,22 +36,6 @@ public class MemberController {
 	public ApiResponse<Void> deleteMember(@Login Account account) {
 		memberService.delete(account);
 		return ApiResponse.noData(HttpStatus.OK, ResponseMessage.MEMBER_DELETE_SUCCESS.getMessage());
-	}
-
-	@PostMapping("/login")
-	public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request) {
-		return ApiResponse.ok(ResponseMessage.LOGIN_SUCCESS.getMessage(), memberService.login(request));
-	}
-
-	@DeleteMapping("/logout")
-	public ApiResponse<Void> logout(@Login Account account) {
-		memberService.logout(account);
-		return ApiResponse.noData(HttpStatus.OK, ResponseMessage.LOGOUT_SUCCESS.getMessage());
-	}
-
-	@PostMapping("/reissue")
-	public ApiResponse<AccessTokenResponse> reissueAccessToken(@Login Account account) {
-		return ApiResponse.ok(ResponseMessage.REISSUE_ACCESS_TOKEN_SUCCESS.getMessage(), memberService.reissueAccessToken(account));
 	}
 
 }

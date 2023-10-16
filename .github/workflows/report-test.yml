@@ -41,10 +41,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Copy application-jwt.yml
+      - name: Copy application.yml
         run: |
           touch ./src/main/resources/application-jwt.yml
           echo "${{ secrets.APPLICATION_JWT }}" > ./src/main/resources/application-jwt.yml
+          touch ./src/main/resources/application-oauth.yml
+          echo "${{ secrets.APPLICATION_OAUTH }}" > ./src/main/resources/application-oauth.yml
           find src/main/resources
 
       - name: Cache Gradle packages

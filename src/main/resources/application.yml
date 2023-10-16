@@ -1,7 +1,9 @@
 spring:
   profiles:
     active: local
-    include: jwt
+    include:
+      - jwt
+      - oauth
   jpa:
     hibernate:
       ddl-auto: none

@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.application;
+package com.yeon.colorpalette.auth.application;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

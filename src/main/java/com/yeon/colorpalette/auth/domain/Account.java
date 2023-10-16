@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.domain;
+package com.yeon.colorpalette.auth.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

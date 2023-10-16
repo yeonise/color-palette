@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.infrastructure;
+package com.yeon.colorpalette.auth.infrastructure;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
-import com.yeon.colorpalette.member.application.TokenProperties;
-import com.yeon.colorpalette.member.domain.RefreshToken;
+import com.yeon.colorpalette.auth.application.TokenProperties;
+import com.yeon.colorpalette.auth.domain.RefreshToken;
 
 import lombok.RequiredArgsConstructor;
 

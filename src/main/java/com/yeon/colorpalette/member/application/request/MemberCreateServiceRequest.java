@@ -1,8 +1,8 @@
 package com.yeon.colorpalette.member.application.request;
 
 import com.yeon.colorpalette.member.domain.Member;
-import com.yeon.colorpalette.member.domain.Provider;
-import com.yeon.colorpalette.member.domain.Role;
+import com.yeon.colorpalette.auth.domain.Provider;
+import com.yeon.colorpalette.auth.domain.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,8 +15,8 @@ public class MemberCreateServiceRequest {
 	private String nickname;
 	private String password;
 
-	public Member toEntity() {
-		return new Member(null, email, nickname, password, Provider.BASIC, Role.MEMBER, false);
+	public Member toEntity(Provider provider) {
+		return new Member(null, email, nickname, password, provider, Role.MEMBER, false);
 	}
 
 }

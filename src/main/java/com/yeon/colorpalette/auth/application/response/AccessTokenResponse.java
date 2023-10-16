@@ -1,4 +1,4 @@
-package com.yeon.colorpalette.member.application.response;
+package com.yeon.colorpalette.auth.application.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
