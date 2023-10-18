@@ -25,6 +25,7 @@ CREATE TABLE `palette` (
 	color2 VARCHAR(6),
 	color3 VARCHAR(6),
 	color4 VARCHAR(6),
+	signature VARCHAR(24),
 	tag_id BIGINT,
 	views INT DEFAULT 0,
 	created_at TIMESTAMP,
