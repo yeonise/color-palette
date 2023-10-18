@@ -121,6 +121,47 @@ class PaletteControllerTest extends RestDocsSupport {
 				)));
 	}
 
+	@DisplayName("팔레트 생성 API with No Color")
+	@Test
+	void createPaletteWithNoColor() throws Exception {
+		// given
+		PaletteCreateRequest request = PaletteCreateRequest.builder()
+			.color1(" ")
+			.color2("  ")
+			.color3("AAAAAG")
+			.tagId(1L)
+			.build();
+
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		// when & then
+		mockMvc.perform(post("/api/palettes")
+				.header(HttpHeaders.AUTHORIZATION, makeAuthorizationHeader(60000L))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andDo(document("palette-create-no-color",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("color1").type(JsonFieldType.STRING).description("첫 번째 색"),
+					fieldWithPath("color2").type(JsonFieldType.STRING).description("두 번째 색"),
+					fieldWithPath("color3").type(JsonFieldType.STRING).description("세 번째 색"),
+					fieldWithPath("color4").type(JsonFieldType.NULL).description("네 번째 색"),
+					fieldWithPath("tagId").type(JsonFieldType.NUMBER).description("태그 아이디").optional()
+				),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.NULL).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.ARRAY).description("데이터"),
+					fieldWithPath("data[].field").type(JsonFieldType.STRING).description("필드"),
+					fieldWithPath("data[].message").type(JsonFieldType.STRING).description("에러 메시지")
+				)));
+	}
+
 	@DisplayName("팔레트 생성 API with Palette Already Exists")
 	@Test
 	void createPaletteAlreadyExists() throws Exception {
