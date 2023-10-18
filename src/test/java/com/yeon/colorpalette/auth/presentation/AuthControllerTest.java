@@ -8,33 +8,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.yeon.colorpalette.RestDocsSupport;
-import com.yeon.colorpalette.auth.application.TokenManager;
-import com.yeon.colorpalette.auth.application.TokenProperties;
 import com.yeon.colorpalette.auth.application.response.LoginResponse;
+import com.yeon.colorpalette.auth.domain.Account;
 import com.yeon.colorpalette.auth.presentation.request.LoginRequest;
 import com.yeon.colorpalette.exception.auth.ExpiredTokenException;
 import com.yeon.colorpalette.exception.auth.InvalidLoginException;
 import com.yeon.colorpalette.exception.auth.InvalidTokenException;
 
-import io.jsonwebtoken.security.Keys;
-
 public class AuthControllerTest extends RestDocsSupport {
-
-	@Autowired
-	TokenManager tokenManager;
-
-	@Autowired
-	TokenProperties tokenProperties;
 
 	@DisplayName("OAuth 로그인 API")
 	@Test
@@ -138,6 +126,9 @@ public class AuthControllerTest extends RestDocsSupport {
 		// given
 		String authorizationHeader = makeAuthorizationHeader(6000L);
 
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
 		// when & then
 		mockMvc.perform(delete("/api/logout")
 				.header(HttpHeaders.AUTHORIZATION, authorizationHeader))
@@ -202,12 +193,6 @@ public class AuthControllerTest extends RestDocsSupport {
 					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
 					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
 				)));
-	}
-
-	private String makeAuthorizationHeader(long duration) {
-		Map<String, Object> claims = Map.of("id", 1L);
-		return "Bearer " + tokenManager.generateToken(claims, tokenProperties.getIssuer(),
-			duration, Keys.hmacShaKeyFor(tokenProperties.getSecret().getBytes()));
 	}
 
 }
