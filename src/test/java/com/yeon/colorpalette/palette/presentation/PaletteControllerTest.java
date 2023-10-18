@@ -18,7 +18,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.yeon.colorpalette.RestDocsSupport;
 import com.yeon.colorpalette.auth.domain.Account;
+import com.yeon.colorpalette.exception.member.MemberNotFoundException;
 import com.yeon.colorpalette.exception.palette.PaletteAlreadyExistsException;
+import com.yeon.colorpalette.exception.palette.TagNotFoundException;
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 import com.yeon.colorpalette.palette.application.response.PaletteCreateResponse;
 import com.yeon.colorpalette.palette.presentation.request.PaletteCreateRequest;
@@ -145,6 +147,92 @@ class PaletteControllerTest extends RestDocsSupport {
 			.andDo(print())
 			.andExpect(status().isBadRequest())
 			.andDo(document("palette-create-already-exists",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("color1").type(JsonFieldType.STRING).description("첫 번째 색"),
+					fieldWithPath("color2").type(JsonFieldType.STRING).description("두 번째 색"),
+					fieldWithPath("color3").type(JsonFieldType.STRING).description("세 번째 색"),
+					fieldWithPath("color4").type(JsonFieldType.STRING).description("네 번째 색"),
+					fieldWithPath("tagId").type(JsonFieldType.NUMBER).description("태그 아이디").optional()
+				),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("팔레트 생성 API with Member Not Found Exception")
+	@Test
+	void createPaletteWithMemberNotFoundException() throws Exception {
+		// given
+		PaletteCreateRequest request = PaletteCreateRequest.builder()
+			.color1("FFFFFF")
+			.color2("FFFFFF")
+			.color3("FFFFFF")
+			.color4("FFFFFF")
+			.tagId(1L)
+			.build();
+
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		given(paletteService.create(any(PaletteCreateServiceRequest.class)))
+			.willThrow(new MemberNotFoundException());
+
+		// when & then
+		mockMvc.perform(post("/api/palettes")
+				.header(HttpHeaders.AUTHORIZATION, makeAuthorizationHeader(60000L))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andDo(document("palette-create-member-not-found",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("color1").type(JsonFieldType.STRING).description("첫 번째 색"),
+					fieldWithPath("color2").type(JsonFieldType.STRING).description("두 번째 색"),
+					fieldWithPath("color3").type(JsonFieldType.STRING).description("세 번째 색"),
+					fieldWithPath("color4").type(JsonFieldType.STRING).description("네 번째 색"),
+					fieldWithPath("tagId").type(JsonFieldType.NUMBER).description("태그 아이디").optional()
+				),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("팔레트 생성 API with Tag Not Found Exception")
+	@Test
+	void createPaletteWithTagNotFoundException() throws Exception {
+		// given
+		PaletteCreateRequest request = PaletteCreateRequest.builder()
+			.color1("FFFFFF")
+			.color2("FFFFFF")
+			.color3("FFFFFF")
+			.color4("FFFFFF")
+			.tagId(10L)
+			.build();
+
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		given(paletteService.create(any(PaletteCreateServiceRequest.class)))
+			.willThrow(new TagNotFoundException());
+
+		// when & then
+		mockMvc.perform(post("/api/palettes")
+				.header(HttpHeaders.AUTHORIZATION, makeAuthorizationHeader(60000L))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andDo(document("palette-create-tag-not-found",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestFields(
