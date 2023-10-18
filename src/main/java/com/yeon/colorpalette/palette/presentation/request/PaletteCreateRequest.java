@@ -2,7 +2,7 @@ package com.yeon.colorpalette.palette.presentation.request;
 
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PaletteCreateRequest {
 
-	@NotBlank(message = "색상 코드가 존재하지 않습니다")
+	@NotNull(message = "색상 코드가 존재하지 않습니다")
 	@Pattern(regexp = "^([A-Fa-f0-9]{6})$", message = "유효한 색상 코드 형식이 아닙니다")
 	private String color1;
 
-	@NotBlank(message = "색상 코드가 존재하지 않습니다")
+	@NotNull(message = "색상 코드가 존재하지 않습니다")
 	@Pattern(regexp = "^([A-Fa-f0-9]{6})$", message = "유효한 색상 코드 형식이 아닙니다")
 	private String color2;
 
-	@NotBlank(message = "색상 코드가 존재하지 않습니다")
+	@NotNull(message = "색상 코드가 존재하지 않습니다")
 	@Pattern(regexp = "^([A-Fa-f0-9]{6})$", message = "유효한 색상 코드 형식이 아닙니다")
 	private String color3;
 
-	@NotBlank(message = "색상 코드가 존재하지 않습니다")
+	@NotNull(message = "색상 코드가 존재하지 않습니다")
 	@Pattern(regexp = "^([A-Fa-f0-9]{6})$", message = "유효한 색상 코드 형식이 아닙니다")
 	private String color4;
 
