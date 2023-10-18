@@ -10,7 +10,12 @@ public enum ErrorType {
 	INVALID_AUTHORIZATION_HEADER(HttpStatus.BAD_REQUEST, "Authorization 헤더를 찾을 수 없거나 형식이 올바르지 않습니다"),
 	EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다"),
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
-	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 정보입니다");
+	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 정보입니다"),
+	MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다"),
+
+	// Palette
+	PALETTE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 팔레트입니다"),
+	TAG_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 태그입니다");
 
 	private final HttpStatus status;
 	private final String message;
