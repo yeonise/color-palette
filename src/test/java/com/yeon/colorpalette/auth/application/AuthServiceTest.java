@@ -25,17 +25,9 @@ import com.yeon.colorpalette.auth.presentation.request.LoginRequest;
 import com.yeon.colorpalette.exception.auth.AuthorizationHeaderException;
 import com.yeon.colorpalette.exception.auth.InvalidLoginException;
 import com.yeon.colorpalette.exception.auth.InvalidTokenException;
-import com.yeon.colorpalette.member.application.MemberService;
-import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.domain.Member;
 
 class AuthServiceTest extends IntegrationTestSupport {
-
-	@Autowired
-	AuthService authService;
-
-	@Autowired
-	MemberService memberService;
 
 	@Autowired
 	TokenRepository tokenRepository;
@@ -107,12 +99,6 @@ class AuthServiceTest extends IntegrationTestSupport {
 			() -> assertThat(tokenRepository.findRefreshToken(1L)).isEmpty(),
 			() -> assertThat(tokenRepository.isInBlacklist(loginResponse.getAccessToken())).isTrue()
 		);
-	}
-
-	private Member makeMemberFixture() {
-		MemberCreateServiceRequest serviceRequest =
-			new MemberCreateServiceRequest("white@email.com", "white", "white100!");
-		return memberService.create(serviceRequest);
 	}
 
 	private static LoginRequest makeLoginRequest(String email, String password) {

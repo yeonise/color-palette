@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.yeon.colorpalette.IntegrationTestSupport;
 import com.yeon.colorpalette.exception.member.MemberNotFoundException;
@@ -18,19 +17,11 @@ import com.yeon.colorpalette.exception.palette.InvalidPaletteCreatorException;
 import com.yeon.colorpalette.exception.palette.PaletteAlreadyExistsException;
 import com.yeon.colorpalette.exception.palette.PaletteNotFoundException;
 import com.yeon.colorpalette.exception.palette.TagNotFoundException;
-import com.yeon.colorpalette.member.application.MemberService;
-import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 import com.yeon.colorpalette.palette.application.response.PaletteCreateResponse;
 
 class PaletteServiceTest extends IntegrationTestSupport {
-
-	@Autowired
-	MemberService memberService;
-
-	@Autowired
-	PaletteService paletteService;
 
 	@DisplayName("팔레트 생성 시나리오")
 	@TestFactory
@@ -134,14 +125,6 @@ class PaletteServiceTest extends IntegrationTestSupport {
 				assertThat(deleted).isEqualTo(1);
 			})
 		);
-	}
-
-	private Member makeMemberFixture() {
-		return memberService.create(new MemberCreateServiceRequest("white@email.com", "white", "white100!"));
-	}
-
-	private PaletteCreateServiceRequest makePaletteCreateServiceRequest(List<String> colors, Long memberId, Long tagId) {
-		return new PaletteCreateServiceRequest(memberId, colors.get(0), colors.get(1), colors.get(2), colors.get(3), tagId);
 	}
 
 }

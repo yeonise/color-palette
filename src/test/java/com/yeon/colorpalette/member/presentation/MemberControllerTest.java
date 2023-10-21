@@ -18,6 +18,7 @@ import com.yeon.colorpalette.RestDocsSupport;
 import com.yeon.colorpalette.auth.domain.Account;
 import com.yeon.colorpalette.exception.member.EmailAlreadyInUseException;
 import com.yeon.colorpalette.exception.member.NicknameAlreadyInUseException;
+import com.yeon.colorpalette.exception.palette.BookmarkAlreadyExistsException;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
 import com.yeon.colorpalette.member.presentation.request.MemberCreateRequest;
 
@@ -165,6 +166,81 @@ class MemberControllerTest extends RestDocsSupport {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(document("member-delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("북마크 생성 API")
+	@Test
+	void registerBookmark() throws Exception {
+		String authorizationHeader = makeAuthorizationHeader(60000L);
+
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		// when & then
+		mockMvc.perform(post("/api/members/bookmarks/1")
+				.header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+			.andDo(print())
+			.andExpect(status().isCreated())
+			.andDo(document("bookmark-register",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("북마크 생성 API with Bookmark Already Exists Exception")
+	@Test
+	void registerBookmarkWithBookmarkAlreadyExistsException() throws Exception {
+		String authorizationHeader = makeAuthorizationHeader(60000L);
+
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		given(memberService.registerBookmark(anyLong(), anyLong()))
+			.willThrow(new BookmarkAlreadyExistsException());
+
+		// when & then
+		mockMvc.perform(post("/api/members/bookmarks/1")
+				.header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andDo(document("bookmark-register-already-exists",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("북마크 삭제 API")
+	@Test
+	void unregisterBookmark() throws Exception {
+		String authorizationHeader = makeAuthorizationHeader(60000L);
+
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		// when & then
+		mockMvc.perform(delete("/api/members/bookmarks/1")
+				.header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("bookmark-unregister",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				responseFields(
