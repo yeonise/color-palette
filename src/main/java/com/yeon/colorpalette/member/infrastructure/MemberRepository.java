@@ -15,9 +15,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	boolean existsByNickname(String nickname);
 	Optional<Member> findByEmailAndPasswordAndIsDeleted(String email, String password, boolean isDeleted);
 	Optional<Member> findByEmailAndProviderAndIsDeleted(String email, Provider provider, boolean isDeleted);
+	Optional<Member> findByIdAndIsDeleted(long memberId, boolean isDeleted);
 
 	@Modifying
 	@Query(value = "UPDATE Member m SET m.isDeleted = true WHERE id = :id ")
-	void deleteSoftlyById(long id);
+	int deleteSoftlyById(long id);
 
 }

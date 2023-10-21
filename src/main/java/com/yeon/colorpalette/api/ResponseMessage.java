@@ -8,10 +8,12 @@ public enum ResponseMessage {
 	LOGIN_SUCCESS("로그인에 성공했습니다"),
 	LOGOUT_SUCCESS("로그아웃이 정상적으로 처리되었습니다"),
 	REISSUE_ACCESS_TOKEN_SUCCESS("Access 토큰 재발급에 성공했습니다"),
+	BOOKMARK_REGISTER_SUCCESS("북마크 등록에 성공했습니다"),
+	BOOKMARK_UNREGISTER_SUCCESS("북마크가 정상적으로 삭제되었습니다"),
 
 	// Palette
 	PALETTE_CREATE_SUCCESS("팔레트 등록에 성공했습니다"),
-	PALETTE_DELETE_SUCCESS("팔레트가 정상적으로 삭제되었습니다");
+	PALETTE_DELETE_SUCCESS("팔레트가 정상적으로 삭제되었습니다"),;
 
 	private final String message;
 
