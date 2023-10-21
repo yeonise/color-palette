@@ -1,5 +1,6 @@
 package com.yeon.colorpalette.member.application.request;
 
+import com.yeon.colorpalette.member.domain.Bookmarks;
 import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.auth.domain.Provider;
 import com.yeon.colorpalette.auth.domain.Role;
@@ -16,7 +17,7 @@ public class MemberCreateServiceRequest {
 	private String password;
 
 	public Member toEntity(Provider provider) {
-		return new Member(null, email, nickname, password, provider, Role.MEMBER, false);
+		return new Member(null, email, nickname, password, provider, Role.MEMBER, new Bookmarks(), false);
 	}
 
 }

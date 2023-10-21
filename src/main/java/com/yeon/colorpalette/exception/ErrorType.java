@@ -12,6 +12,7 @@ public enum ErrorType {
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
 	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 정보입니다"),
 	MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다"),
+	BOOKMARK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 북마크에 등록된 팔레트입니다"),
 
 	// Palette
 	PALETTE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 팔레트입니다"),
