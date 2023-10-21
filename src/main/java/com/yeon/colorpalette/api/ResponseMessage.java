@@ -10,7 +10,8 @@ public enum ResponseMessage {
 	REISSUE_ACCESS_TOKEN_SUCCESS("Access 토큰 재발급에 성공했습니다"),
 
 	// Palette
-	PALETTE_CREATE_SUCCESS("팔레트 등록에 성공했습니다");
+	PALETTE_CREATE_SUCCESS("팔레트 등록에 성공했습니다"),
+	PALETTE_DELETE_SUCCESS("팔레트가 정상적으로 삭제되었습니다");
 
 	private final String message;
 
