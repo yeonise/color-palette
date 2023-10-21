@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.yeon.colorpalette.IntegrationTestSupport;
 import com.yeon.colorpalette.exception.member.MemberNotFoundException;
+import com.yeon.colorpalette.exception.palette.InvalidPaletteCreatorException;
 import com.yeon.colorpalette.exception.palette.PaletteAlreadyExistsException;
+import com.yeon.colorpalette.exception.palette.PaletteNotFoundException;
 import com.yeon.colorpalette.exception.palette.TagNotFoundException;
 import com.yeon.colorpalette.member.application.MemberService;
 import com.yeon.colorpalette.member.application.request.MemberCreateServiceRequest;
@@ -32,12 +34,9 @@ class PaletteServiceTest extends IntegrationTestSupport {
 
 	@DisplayName("팔레트 생성 시나리오")
 	@TestFactory
-	Collection<DynamicTest> test() {
+	Collection<DynamicTest> create() {
 	    // given
-		MemberCreateServiceRequest serviceRequest =
-			new MemberCreateServiceRequest("white@email.com", "white", "white100!");
-
-		Member member = memberService.create(serviceRequest);
+		Member member = makeMemberFixture();
 
 	   	return List.of(
 			dynamicTest("새로운 팔레트 생성에 성공한다", () -> {
@@ -104,6 +103,41 @@ class PaletteServiceTest extends IntegrationTestSupport {
 				);
 			})
 		);
+	}
+
+	@DisplayName("팔레트 삭제 시나리오")
+	@TestFactory
+	Collection<DynamicTest> delete() {
+		// given
+		Member member = makeMemberFixture();
+
+		List<String> colors = List.of("AAAAAA", "BBBBBB", "CCCCCC", "DDDDDD");
+		PaletteCreateServiceRequest request = makePaletteCreateServiceRequest(colors, member.getId(), null);
+		PaletteCreateResponse paletteCreateResponse = paletteService.create(request);
+
+		return List.of(
+			dynamicTest("존재하지 않는 팔레트 삭제 요청 시 예외가 발생한다", () -> {
+				// when & then
+				assertThatThrownBy(() -> paletteService.delete(2L, member.getId()))
+					.isInstanceOf(PaletteNotFoundException.class);
+			}),
+			dynamicTest("팔레트 삭제를 요청한 사용자와 팔레트의 생성자가 일치하지 않는 경우 예외가 발생한다", () -> {
+				// when & then
+				assertThatThrownBy(() -> paletteService.delete(paletteCreateResponse.getId(), 2L))
+					.isInstanceOf(InvalidPaletteCreatorException.class);
+			}),
+			dynamicTest("팔레트를 정상적으로 삭제한다", () -> {
+				// when
+				int deleted = paletteService.delete(paletteCreateResponse.getId(), member.getId());
+
+				// then
+				assertThat(deleted).isEqualTo(1);
+			})
+		);
+	}
+
+	private Member makeMemberFixture() {
+		return memberService.create(new MemberCreateServiceRequest("white@email.com", "white", "white100!"));
 	}
 
 	private PaletteCreateServiceRequest makePaletteCreateServiceRequest(List<String> colors, Long memberId, Long tagId) {

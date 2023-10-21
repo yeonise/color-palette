@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yeon.colorpalette.exception.member.MemberNotFoundException;
+import com.yeon.colorpalette.exception.palette.InvalidPaletteCreatorException;
 import com.yeon.colorpalette.exception.palette.PaletteAlreadyExistsException;
+import com.yeon.colorpalette.exception.palette.PaletteNotFoundException;
 import com.yeon.colorpalette.exception.palette.TagNotFoundException;
 import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.member.infrastructure.MemberRepository;
@@ -59,6 +61,21 @@ public class PaletteService {
 		if (paletteRepository.existsBySignature(signature)) {
 			throw new PaletteAlreadyExistsException();
 		}
+	}
+
+	@Transactional
+	public int delete(Long paletteId, Long memberId) {
+		Palette palette = findPalette(paletteId);
+
+		if (palette.getMember().getId().equals(memberId)) {
+			return paletteRepository.deleteSoftlyById(palette.getId());
+		} else {
+			throw new InvalidPaletteCreatorException();
+		}
+	}
+
+	private Palette findPalette(Long paletteId) {
+		return paletteRepository.findById(paletteId).orElseThrow(PaletteNotFoundException::new);
 	}
 
 	private Member findMember(Long memberId) {

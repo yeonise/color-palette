@@ -19,7 +19,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import com.yeon.colorpalette.RestDocsSupport;
 import com.yeon.colorpalette.auth.domain.Account;
 import com.yeon.colorpalette.exception.member.MemberNotFoundException;
+import com.yeon.colorpalette.exception.palette.InvalidPaletteCreatorException;
 import com.yeon.colorpalette.exception.palette.PaletteAlreadyExistsException;
+import com.yeon.colorpalette.exception.palette.PaletteNotFoundException;
 import com.yeon.colorpalette.exception.palette.TagNotFoundException;
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 import com.yeon.colorpalette.palette.application.response.PaletteCreateResponse;
@@ -283,6 +285,81 @@ class PaletteControllerTest extends RestDocsSupport {
 					fieldWithPath("color4").type(JsonFieldType.STRING).description("네 번째 색"),
 					fieldWithPath("tagId").type(JsonFieldType.NUMBER).description("태그 아이디").optional()
 				),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("팔레트 삭제 API")
+	@Test
+	void deletePalette() throws Exception {
+		// given
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		// when & then
+		mockMvc.perform(delete("/api/palettes/1")
+				.header(HttpHeaders.AUTHORIZATION, makeAuthorizationHeader(60000L)))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("palette-delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("팔레트 삭제 API with Palette Not Found Exception")
+	@Test
+	void deletePaletteWithPaletteNotFoundException() throws Exception {
+		// given
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		given(paletteService.delete(anyLong(), anyLong()))
+			.willThrow(new PaletteNotFoundException());
+
+		// when & then
+		mockMvc.perform(delete("/api/palettes/100")
+				.header(HttpHeaders.AUTHORIZATION, makeAuthorizationHeader(60000L)))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andDo(document("palette-delete-not-found",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("팔레트 삭제 API with Invalid Creator Exception")
+	@Test
+	void deletePaletteWithInvalidCreatorException() throws Exception {
+		// given
+		given(authService.extractAccount(anyString()))
+			.willReturn(new Account(1L, null));
+
+		given(paletteService.delete(anyLong(), anyLong()))
+			.willThrow(new InvalidPaletteCreatorException());
+
+		// when & then
+		mockMvc.perform(delete("/api/palettes/1")
+				.header(HttpHeaders.AUTHORIZATION, makeAuthorizationHeader(60000L)))
+			.andDo(print())
+			.andExpect(status().isForbidden())
+			.andDo(document("palette-delete-invalid-creator",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
 				responseFields(
 					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
 					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),

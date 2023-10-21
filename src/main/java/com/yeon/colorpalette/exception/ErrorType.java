@@ -15,7 +15,9 @@ public enum ErrorType {
 
 	// Palette
 	PALETTE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 팔레트입니다"),
-	TAG_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 태그입니다");
+	TAG_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 태그입니다"),
+	PALETTE_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 팔레트입니다"),
+	INVALID_PALETTE_CREATOR(HttpStatus.FORBIDDEN, "팔레트에 대한 권한이 없는 사용자입니다");
 
 	private final HttpStatus status;
 	private final String message;
