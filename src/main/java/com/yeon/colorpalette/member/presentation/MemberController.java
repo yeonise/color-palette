@@ -2,6 +2,7 @@ package com.yeon.colorpalette.member.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,19 @@ public class MemberController {
 	public ApiResponse<Void> deleteMember(@Login Account account) {
 		memberService.delete(account);
 		return ApiResponse.noData(HttpStatus.OK, ResponseMessage.MEMBER_DELETE_SUCCESS.getMessage());
+	}
+
+	@ResponseStatus(HttpStatus.CREATED)
+	@PostMapping("/bookmarks/{paletteId}")
+	public ApiResponse<Void> registerBookmark(@PathVariable Long paletteId, @Login Account account) {
+		memberService.registerBookmark(paletteId, account.getId());
+		return ApiResponse.noData(HttpStatus.CREATED, ResponseMessage.BOOKMARK_REGISTER_SUCCESS.getMessage());
+	}
+
+	@DeleteMapping("/bookmarks/{bookmarkId}")
+	public ApiResponse<Void> unregisterBookmark(@PathVariable Long bookmarkId, @Login Account account) {
+		memberService.unregisterBookmark(bookmarkId, account.getId());
+		return ApiResponse.noData(HttpStatus.OK, ResponseMessage.BOOKMARK_UNREGISTER_SUCCESS.getMessage());
 	}
 
 }
