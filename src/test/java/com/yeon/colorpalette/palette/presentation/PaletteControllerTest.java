@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import com.yeon.colorpalette.exception.palette.PaletteNotFoundException;
 import com.yeon.colorpalette.exception.palette.TagNotFoundException;
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 import com.yeon.colorpalette.palette.application.response.PaletteCreateResponse;
+import com.yeon.colorpalette.palette.application.response.PaletteReadResponse;
+import com.yeon.colorpalette.palette.application.response.PaletteReadSliceResponse;
 import com.yeon.colorpalette.palette.presentation.request.PaletteCreateRequest;
 
 class PaletteControllerTest extends RestDocsSupport {
@@ -365,6 +368,83 @@ class PaletteControllerTest extends RestDocsSupport {
 					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
 					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
 					fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+				)));
+	}
+
+	@DisplayName("팔레트 전체 조회 API")
+	@Test
+	void readAllPalette() throws Exception {
+		// given
+		given(paletteService.read(any(), any(), any()))
+			.willReturn(new PaletteReadSliceResponse(false, List.of(
+				new PaletteReadResponse(2L, "black", "000000", "111111", "222222", "A1A1A1", "DARK", 30, 20,
+					LocalDateTime.of(2023, 12, 27, 19, 0, 0, 0)),
+				new PaletteReadResponse(1L, "white", "FFFFFF", "AAAAAA", "DDDDDD", "A1A1A1", null, 20, 10,
+					LocalDateTime.of(2023, 12, 27, 7, 0, 0, 0)))));
+
+		// when & then
+		mockMvc.perform(get("/api/palettes")
+				.param("sort", "id,desc"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("palette-read-all",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터"),
+					fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("추가 데이터 유무"),
+					fieldWithPath("data.palettes").type(JsonFieldType.ARRAY).description("조회한 데이터 목록"),
+					fieldWithPath("data.palettes[].id").type(JsonFieldType.NUMBER).description("아이디"),
+					fieldWithPath("data.palettes[].creator").type(JsonFieldType.STRING).description("생성자"),
+					fieldWithPath("data.palettes[].color1").type(JsonFieldType.STRING).description("첫 번째 색"),
+					fieldWithPath("data.palettes[].color2").type(JsonFieldType.STRING).description("두 번째 색"),
+					fieldWithPath("data.palettes[].color3").type(JsonFieldType.STRING).description("세 번째 색"),
+					fieldWithPath("data.palettes[].color4").type(JsonFieldType.STRING).description("네 번째 색"),
+					fieldWithPath("data.palettes[].tag").type(JsonFieldType.STRING).description("태그 이름").optional(),
+					fieldWithPath("data.palettes[].views").type(JsonFieldType.NUMBER).description("조회수"),
+					fieldWithPath("data.palettes[].bookmarks").type(JsonFieldType.NUMBER).description("북마크 등록수"),
+					fieldWithPath("data.palettes[].createdAt").type(JsonFieldType.STRING).description("생성일")
+				)));
+	}
+
+	@DisplayName("팔레트 조건 조회 API")
+	@Test
+	void readPalette() throws Exception {
+		// given
+		given(paletteService.read(any(), any(), any()))
+			.willReturn(new PaletteReadSliceResponse(false, List.of(
+				new PaletteReadResponse(2L, "black", "000000", "111111", "222222", "A1A1A1", "DARK", 30, 20,
+					LocalDateTime.of(2023, 12, 27, 19, 0, 0, 0)))));
+
+		// when & then
+		mockMvc.perform(get("/api/palettes")
+				.param("color", "111111")
+				.param("tag", "1"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andDo(document("palette-read",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("code").type(JsonFieldType.NUMBER).description("코드"),
+					fieldWithPath("status").type(JsonFieldType.STRING).description("상태"),
+					fieldWithPath("message").type(JsonFieldType.STRING).description("메시지"),
+					fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터"),
+					fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("추가 데이터 유무"),
+					fieldWithPath("data.palettes").type(JsonFieldType.ARRAY).description("조회한 데이터 목록"),
+					fieldWithPath("data.palettes[].id").type(JsonFieldType.NUMBER).description("아이디"),
+					fieldWithPath("data.palettes[].creator").type(JsonFieldType.STRING).description("생성자"),
+					fieldWithPath("data.palettes[].color1").type(JsonFieldType.STRING).description("첫 번째 색"),
+					fieldWithPath("data.palettes[].color2").type(JsonFieldType.STRING).description("두 번째 색"),
+					fieldWithPath("data.palettes[].color3").type(JsonFieldType.STRING).description("세 번째 색"),
+					fieldWithPath("data.palettes[].color4").type(JsonFieldType.STRING).description("네 번째 색"),
+					fieldWithPath("data.palettes[].tag").type(JsonFieldType.STRING).description("태그 이름").optional(),
+					fieldWithPath("data.palettes[].views").type(JsonFieldType.NUMBER).description("조회수"),
+					fieldWithPath("data.palettes[].bookmarks").type(JsonFieldType.NUMBER).description("북마크 등록수"),
+					fieldWithPath("data.palettes[].createdAt").type(JsonFieldType.STRING).description("생성일")
 				)));
 	}
 
