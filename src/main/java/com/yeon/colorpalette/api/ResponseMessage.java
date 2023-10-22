@@ -13,7 +13,8 @@ public enum ResponseMessage {
 
 	// Palette
 	PALETTE_CREATE_SUCCESS("팔레트 등록에 성공했습니다"),
-	PALETTE_DELETE_SUCCESS("팔레트가 정상적으로 삭제되었습니다"),;
+	PALETTE_DELETE_SUCCESS("팔레트가 정상적으로 삭제되었습니다"),
+	PALETTE_READ_SUCCESS("팔레트 조회에 성공했습니다");
 
 	private final String message;
 

@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PaletteCreateResponse {
+public class PaletteReadResponse {
 
 	private Long id;
 	private String creator;
@@ -17,11 +17,13 @@ public class PaletteCreateResponse {
 	private String color2;
 	private String color3;
 	private String color4;
-	private String tagName;
+	private String tag;
+	private int views;
+	private int bookmarks;
 	private LocalDateTime createdAt;
 
-	public static PaletteCreateResponse from(Palette palette) {
-		return new PaletteCreateResponse(
+	public static PaletteReadResponse from(Palette palette) {
+		return new PaletteReadResponse(
 			palette.getId(),
 			palette.findCreator(),
 			palette.getColor1(),
@@ -29,8 +31,9 @@ public class PaletteCreateResponse {
 			palette.getColor3(),
 			palette.getColor4(),
 			palette.findTagName(),
+			palette.getViews(),
+			palette.getBookmarks().size(),
 			palette.getCreatedAt()
 		);
 	}
-
 }

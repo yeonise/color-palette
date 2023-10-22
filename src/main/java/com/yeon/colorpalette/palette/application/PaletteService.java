@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.member.infrastructure.MemberRepository;
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 import com.yeon.colorpalette.palette.application.response.PaletteCreateResponse;
+import com.yeon.colorpalette.palette.application.response.PaletteReadResponse;
+import com.yeon.colorpalette.palette.application.response.PaletteReadSliceResponse;
 import com.yeon.colorpalette.palette.domain.Palette;
 import com.yeon.colorpalette.palette.domain.Tag;
 import com.yeon.colorpalette.palette.infrastructure.PaletteRepository;
@@ -45,6 +49,24 @@ public class PaletteService {
 		return PaletteCreateResponse.from(paletteRepository.save(createPalette(request, signature, member, tag)));
 	}
 
+	@Transactional
+	public int delete(Long paletteId, Long memberId) {
+		Palette palette = findPalette(paletteId);
+
+		if (palette.getMember().getId().equals(memberId)) {
+			return paletteRepository.deleteSoftlyById(palette.getId());
+		} else {
+			throw new InvalidPaletteCreatorException();
+		}
+	}
+
+	public PaletteReadSliceResponse read(Pageable pageable, String color, Long tag) {
+		Slice<Palette> palettes = paletteRepository.findSlice(pageable, color, findTag(tag));
+
+		return new PaletteReadSliceResponse(palettes.hasNext(),
+			palettes.getContent().stream().map(PaletteReadResponse::from).collect(Collectors.toList()));
+	}
+
 	private String generateSignature(PaletteCreateServiceRequest request) {
 		List<String> colors = new ArrayList<>();
 		colors.add(request.getColor1());
@@ -63,17 +85,6 @@ public class PaletteService {
 		}
 	}
 
-	@Transactional
-	public int delete(Long paletteId, Long memberId) {
-		Palette palette = findPalette(paletteId);
-
-		if (palette.getMember().getId().equals(memberId)) {
-			return paletteRepository.deleteSoftlyById(palette.getId());
-		} else {
-			throw new InvalidPaletteCreatorException();
-		}
-	}
-
 	private Palette findPalette(Long paletteId) {
 		return paletteRepository.findById(paletteId).orElseThrow(PaletteNotFoundException::new);
 	}
@@ -89,7 +100,7 @@ public class PaletteService {
 	private Palette createPalette(PaletteCreateServiceRequest request, String signature, Member member, Tag tag) {
 		return new Palette(null, member,
 			request.getColor1(), request.getColor2(), request.getColor3(), request.getColor4(),
-			signature, tag, 0, LocalDateTime.now(), false);
+			signature, tag, 0, new ArrayList<>(), LocalDateTime.now(), false);
 	}
 
 }
