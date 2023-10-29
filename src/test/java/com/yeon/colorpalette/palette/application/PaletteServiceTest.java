@@ -10,6 +10,9 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.data.domain.PageRequest;
 
 import com.yeon.colorpalette.IntegrationTestSupport;
 import com.yeon.colorpalette.exception.member.MemberNotFoundException;
@@ -20,16 +23,17 @@ import com.yeon.colorpalette.exception.palette.TagNotFoundException;
 import com.yeon.colorpalette.member.domain.Member;
 import com.yeon.colorpalette.palette.application.request.PaletteCreateServiceRequest;
 import com.yeon.colorpalette.palette.application.response.PaletteCreateResponse;
+import com.yeon.colorpalette.palette.application.response.PaletteReadSliceResponse;
 
 class PaletteServiceTest extends IntegrationTestSupport {
 
 	@DisplayName("팔레트 생성 시나리오")
 	@TestFactory
 	Collection<DynamicTest> create() {
-	    // given
+		// given
 		Member member = makeMemberFixture();
 
-	   	return List.of(
+		return List.of(
 			dynamicTest("새로운 팔레트 생성에 성공한다", () -> {
 				// given
 				List<String> colors = List.of("AAAAAA", "BBBBBB", "CCCCCC", "DDDDDD");
@@ -124,6 +128,30 @@ class PaletteServiceTest extends IntegrationTestSupport {
 				// then
 				assertThat(deleted).isEqualTo(1);
 			})
+		);
+	}
+
+	@DisplayName("팔레트 조회 시나리오")
+	@CsvSource({"AAAAAA,1,false", "111111,1,false", "DDDDDD,1,true", "A1A1A1,0,false"})
+	@ParameterizedTest
+	void read(String color, int size, boolean hasNext) {
+		// given
+		Member member = makeMemberFixture();
+
+		List<String> colors1 = List.of("AAAAAA", "BBBBBB", "CCCCCC", "DDDDDD");
+		List<String> colors2 = List.of("FFFFFF", "111111", "222222", "DDDDDD");
+		paletteService.create(makePaletteCreateServiceRequest(colors1, member.getId(), null));
+		paletteService.create(makePaletteCreateServiceRequest(colors2, member.getId(), null));
+
+		PageRequest pageRequest = PageRequest.of(0, 1);
+
+		// when
+		PaletteReadSliceResponse sliceResponse = paletteService.read(pageRequest, color, null);
+
+		// then
+		assertAll(
+			() -> assertThat(sliceResponse.getPalettes().size()).isEqualTo(size),
+			() -> assertThat(sliceResponse.isHasNext()).isEqualTo(hasNext)
 		);
 	}
 

@@ -45,7 +45,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 		SIGNUP(HttpMethod.POST, "/api/members"),
 		LOGIN(HttpMethod.POST, "/api/login"),
-		REISSUE_ACCESS_TOKEN(HttpMethod.GET, "/api/auth/reissue"),;
+		REISSUE_ACCESS_TOKEN(HttpMethod.GET, "/api/auth/reissue"),
+		READ_PALETTE(HttpMethod.GET, "/api/palettes");
 
 		private final HttpMethod httpMethod;
 		private final String url;

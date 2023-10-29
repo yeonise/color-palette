@@ -1,6 +1,7 @@
 package com.yeon.colorpalette;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public abstract class IntegrationTestSupport {
 
 	protected Palette makePaletteFixture(Member member, String color, boolean isDeleted) {
 		return paletteRepository.save(new Palette(null, member, "AAAAAA", "BBBBBB", "CCCCCC", color,
-			"AAAAAABBBBBBCCCCCC" + color, null, 0, LocalDateTime.now(), isDeleted));
+			"AAAAAABBBBBBCCCCCC" + color, null, 0, new ArrayList<>(), LocalDateTime.now(), isDeleted));
 	}
 
 	protected PaletteCreateServiceRequest makePaletteCreateServiceRequest(List<String> colors, Long memberId, Long tagId) {
